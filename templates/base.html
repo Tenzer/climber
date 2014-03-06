@@ -1,0 +1,44 @@
+<!doctype html>
+<!--[if IE 9]><html class='lt-ie10' lang='en'> <![endif]-->
+<html class='no-js' lang='en'>
+<head>
+    {% block head %}
+    <title>{% block title %}{% endblock title %}</title>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <link rel='shortcut icon' href='static/img/favicon.ico' type='image/x-icon'>
+    <link rel='stylesheet' href='static/css/normalize.css'>
+    <link rel='stylesheet' href='static/css/foundation.css'>
+    <script src='static/js/vendor/modernizr.js'></script>
+    {% endblock head %}
+</head>
+<body>
+    <div class='row'>
+        <div class='large-12 columns'>
+            <h1>{{ self.title() }}</h1>
+        </div>
+    </div>
+
+    {% block content %}{% endblock content %}
+
+    {% block footer %}
+    <div class='row'>
+        <div class='large-12 columns'>
+            <div class='panel'>
+                <div class='row'>
+                    <div class='large-12 columns'>
+                        <p>Some credits</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock footer %}
+
+    <script src='static/js/vendor/jquery.js'></script>
+    <script src='static/js/foundation.js'></script>
+    <script>
+        $(document).foundation();
+    </script>
+</body>
+</html>
