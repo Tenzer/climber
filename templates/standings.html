@@ -1,0 +1,68 @@
+<table width='100%'>
+    <thead>
+        <tr>
+            <th width='70' rowspan='2'>Rank</th>
+            <th width='179' rowspan='2' class='standings-divider'>Player</th>
+            <th colspan='4' class='text-center standings-divider'>Games</th>
+            <th colspan='3' class='text-center standings-divider'>Goals</th>
+            <th width='90' rowspan='2' class='text-center'>Points</th>
+        </tr>
+        <tr>
+            <th width='90' class='text-center'>Won</th>
+            <th width='90' class='text-center'>Lost</th>
+            <th width='90' class='text-center' nowrap>Win %</th>
+            <th width='90' class='text-center standings-divider'>Streak</th>
+            <th width='90' class='text-center'>Scored</th>
+            <th width='90' class='text-center'>Against</th>
+            <th width='90' class='text-center standings-divider'>Net</th>
+        </tr>
+    </thead>
+    <tbody class='text-center'>
+    {% for player in ranking %}
+        <tr>
+            <td class='text-left'>{{ loop.index }}</td>
+            <td class='text-left standings-divider'>{{ player.name }}</td>
+            <td>{{ player.games_won }}</td>
+            <td>{{ player.games_lost }}</td>
+
+            {% if player.games_won > 0 and player.games_lost > 0 %}
+                <td>{{ (player.games_won / (player.games_won + player.games_lost) * 100) | round(1) }}</td>
+            {% elif player.games_won > 0 %}
+                <td>100.0</td>
+            {% elif player.games_lost > 0 %}
+                <td>0.0</td>
+            {% else %}
+                <td>-</td>
+            {% endif %}
+
+            {% if player.games_streak > 0 %}
+                <td class='text-positive standings-divider'>{{ player.games_streak }} won</td>
+            {% elif player.games_streak < 0 %}
+                <td class='text-negative standings-divider'>{{ player.games_streak * -1 }} lost</td>
+            {% else %}
+                <td class='standings-divider'>{{ player.games_streak }}</td>
+            {% endif %}
+
+            <td>{{ player.goals_scored }}</td>
+            <td>{{ player.goals_against }}</td>
+
+            {% if player.goals_scored > player.goals_against %}
+                <td class='text-positive standings-divider'>+{{ player.goals_scored - player.goals_against }}</td>
+            {% elif player.goals_scored < player.goals_against %}
+                <td class='text-negative standings-divider'>{{ player.goals_scored - player.goals_against }}</td>
+            {% else %}
+                <td class='standings-divider'>{{ player.goals_scored - player.goals_against }}</td>
+            {% endif %}
+
+            <td class='text-right'>{{ player.points }}</td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan='10'>
+                No players created yet.
+                Perhaps you want to <a href='{{ url_for('addPlayer') }}'>be the first</a>?
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

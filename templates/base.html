@@ -3,42 +3,54 @@
 <html class='no-js' lang='en'>
 <head>
     {% block head %}
-    <title>{% block title %}{% endblock title %}</title>
+    <title>{% block title %}Falcon - Climber{% endblock title %}</title>
     <meta charset='utf-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <link rel='shortcut icon' href='static/img/favicon.ico' type='image/x-icon'>
-    <link rel='stylesheet' href='static/css/normalize.css'>
-    <link rel='stylesheet' href='static/css/foundation.css'>
-    <script src='static/js/vendor/modernizr.js'></script>
+    <link rel='shortcut icon' href='{{ url_for('static', filename='favicon.ico') }}' type='image/x-icon'>
+    <link rel='stylesheet' href='{{ url_for('static', filename='css/normalize.css') }}'>
+    <link rel='stylesheet' href='{{ url_for('static', filename='css/foundation.css') }}'>
+    <link rel='stylesheet' href='{{ url_for('static', filename='css/climber.css') }}'>
+    <script src='{{ url_for('static', filename='js/vendor/modernizr.js') }}'></script>
     {% endblock head %}
 </head>
 <body>
     {% block header %}
     <div class='row'>
         <div class='large-12 columns text-center'>
-            <h1>{{ self.title() }}</h1>
+            <a href='{{ url_for('index') }}'>
+                <h1>{{ self.title() }}</h1>
+            </a>
         </div>
     </div>
     {% endblock header %}
 
-    {% block content %}{% endblock content %}
-
-    {% block footer %}
+    {% block menu %}
+    {% set menu_items = [
+        ('Frontpage', 'index'),
+        ('Results', 'results'),
+        ('Add result', 'addResult'),
+        ('Add player', 'addPlayer')
+    ] -%}
     <div class='row'>
-        <div class='large-12 columns'>
-            <div class='panel'>
-                <div class='row'>
-                    <div class='large-12 columns'>
-                        <p>Some credits</p>
-                    </div>
-                </div>
-            </div>
+        <div class='large-12 columns text-center'>
+            <dl id='menu' class='sub-nav'>
+                {% for title, id in menu_items %}
+                <dd{% if active_page == id %} class='active'{% endif %}>
+                    <a href='{{ url_for(id) }}'>{{ title }}</a>
+                </dd>
+                {% endfor %}
+            </dl>
         </div>
     </div>
-    {% endblock footer %}
+    {% endblock menu %}
 
-    <script src='static/js/vendor/jquery.js'></script>
-    <script src='static/js/foundation.js'></script>
+    {% block content %}{% endblock content %}
+
+    <script src='{{ url_for('static', filename='js/vendor/jquery.js') }}'></script>
+    <script src='{{ url_for('static', filename='js/vendor/fastclick.js') }}'></script>
+    <script src='{{ url_for('static', filename='js/foundation.js') }}'></script>
+    <script src='{{ url_for('static', filename='js/foundation.alert.js') }}'></script>
+    <script src='{{ url_for('static', filename='js/typeahead.bundle.js') }}'></script>
     <script>
         $(document).foundation();
     </script>

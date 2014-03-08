@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% set active_page = 'addResult' %}
+
+{% block content %}
+    <div class='row'>
+        <div class='large-6 large-offset-3 columns end'>
+            <h2>Add result</h2>
+        </div>
+    </div>
+
+    {% if message %}
+    <div class='row'>
+        <div class='large-6 large-offset-3 columns end'>
+            <div data-alert class='alert-box success radius'>
+                {{ message }}
+                <a class='close'>&times;</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div class='row'>
+        <div class='large-6 large-offset-3 columns end'>
+            <div data-alert class='alert-box warning radius'>
+                {{ error }}
+                <a class='close'>&times;</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <form action='' method='post' autocomplete='off'>
+        <div class='row'>
+            <div class='large-5 large-offset-3 columns'>
+                <label>
+                    Player name
+                    <input name='player1_name' type='text' required spellcheck='false' tabindex='1' />
+                </label>
+            </div>
+            <div class='large-1 columns end'>
+                <label>
+                    Goals
+                    <input name='player1_goals' type='number' required tabindex='2' />
+                </label>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='large-5 large-offset-3 columns'>
+                <label>
+                    Player name
+                    <input name='player2_name' type='text' required spellcheck='false' tabindex='3' />
+                </label>
+            </div>
+            <div class='large-1 columns end'>
+                <label>
+                    Goals
+                    <input name='player2_goals' type='number' required tabindex='4' />
+                </label>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='large-6 large-offset-3 columns end text-right'>
+                <button type='reset' class='small secondary' tabindex='6'>Clear</button>
+                <button type='submit' class='small' tabindex='5'>Submit</button>
+            </div>
+        </div>
+    </form>
+{% endblock content %}

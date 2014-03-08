@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% set active_page = 'results' %}
+
+{% block content %}
+    <div class='row'>
+        <div class='large-12 columns'>
+            <h2>Results</h2>
+                <table width='100%'>
+                    <thead>
+                        <tr>
+                            <th width='130'>Submitted</th>
+                            <th width='235'>Winner</th>
+                            <th width='125' class='text-center'>Points +/-</th>
+                            <th width='119' colspan='2' class='text-center'>Result</th>
+                            <th width='235'>Loser</th>
+                            <th width='125' class='text-center'>Points +/-</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for game in results %}
+                        <tr>
+                            <td>{{ game.played }}</td>
+                            <td>{{ game.winner_name }}</td>
+
+                            {% if game.winner_points > 0 %}
+                                <td class='text-center text-positive'>+{{ game.winner_points | round(1) }}</td>
+                            {% elif game.winner_points < 0 %}
+                                <td class='text-center text-negative'>{{ game.winner_points | round(1) }}</td>
+                            {% else %}
+                                <td class='text-center'>{{ game.winner_points | round (1) }}</td>
+                            {% endif %}
+
+                            <td class='score-winner'><strong>{{ game.winner_score }}</strong> -</td>
+                            <td class='score-loser'>{{ game.loser_score }}</td>
+
+                            <td>{{ game.loser_name }}</td>
+
+                            {% if game.loser_points > 0 %}
+                                <td class='text-center text-positive'>+{{ game.loser_points | round(1) }}</td>
+                            {% elif game.loser_points < 0 %}
+                                <td class='text-center text-negative'>{{ game.loser_points | round(1) }}</td>
+                            {% else %}
+                                <td class='text-center'>{{ game.loser_points | round (1) }}</td>
+                            {% endif %}
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan='6' class='text-center'>
+                                No results were found.
+                                Perhaps you want to <a href=''>submit one</a>?
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+        </div>
+    </div>
+{% endblock content %}

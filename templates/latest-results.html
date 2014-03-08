@@ -1,0 +1,28 @@
+<table width='100%'>
+    <thead>
+        <tr>
+            <th width='118'>Submitted</th>
+            <th width='140'>Winner</th>
+            <th width='140'>Loser</th>
+            <th width='70' colspan='2' class='text-center'>Result</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for game in recent_games %}
+        <tr>
+            <td>{{ game.played }}</td>
+            <td>{{ game.winner_name }}</td>
+            <td>{{ game.loser_name }}</td>
+            <td class='score-winner'><strong>{{ game.winner_score }}</strong> -</td>
+            <td class='score-loser'>{{ game.loser_score }}</td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan='4' class='text-center'>
+                No game results has been recorded yet.
+                <a href='{{ url_for('addResult') }}'>Submit one</a>?
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
