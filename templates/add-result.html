@@ -35,7 +35,12 @@
             <div class='large-5 large-offset-3 columns'>
                 <label>
                     Player name
-                    <input name='player1_name' type='text' autofocus required spellcheck='false' />
+                    <select name='player1_name' class='autocomplete' data-placeholder='Choose a player...'>
+                        <option value=''></option>
+                        {% for player in players %}
+                        <option value='{{ player.id }}'>{{ player.name }}</option>
+                        {% endfor %}
+                    </select>
                 </label>
             </div>
             <div class='large-1 columns end'>
@@ -49,7 +54,12 @@
             <div class='large-5 large-offset-3 columns'>
                 <label>
                     Player name
-                    <input name='player2_name' type='text' required spellcheck='false' />
+                    <select name='player2_name' class='autocomplete' data-placeholder='Choose a player...'>
+                        <option value=''></option>
+                        {% for player in players %}
+                        <option value='{{ player.id }}'>{{ player.name }}</option>
+                        {% endfor %}
+                    </select>
                 </label>
             </div>
             <div class='large-1 columns end'>
@@ -67,3 +77,9 @@
         </div>
     </form>
 {% endblock content %}
+
+{% block script %}
+    <script>
+        $('.autocomplete').chosen();
+    </script>
+{% endblock script %}

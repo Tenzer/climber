@@ -119,16 +119,19 @@ def addResult():
     message = None
     error = None
 
+    database = getDatabase()
     if request.method == 'POST' and request.form:
         pass
 
-    return render_template('add-result.html', message=message, error=error)
+    players = database.execute('SELECT id, name FROM players WHERE deleted IS NULL').fetchall()
+    return render_template('add-result.html', players=players, message=message, error=error)
 
 
 @app.route('/add-player', methods=['GET', 'POST'])
 def addPlayer():
     message = None
     error = None
+
     if request.method == 'POST' and request.form:
         try:
             database = getDatabase()

@@ -2,7 +2,6 @@
 
 - Do something with form data submitted to `add-result`
 - Add server-side input validation for `add-result`
-- Add typeahead.js to `add-result` page
 - Add simple server-side input validation for `add-player`
 - Strip player names before doing anything with them on `add-player`
 - Implement ranking system
@@ -16,3 +15,4 @@
 - Make pages for each player with results and gravatar picture
 - Trim the Foundation build to only include stuff used
 - Add Foundation Icons to spice up the app
+- Style Chosen select boxes on `add-result` page
