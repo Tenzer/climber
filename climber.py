@@ -135,12 +135,15 @@ def addPlayer():
     if request.method == 'POST' and request.form:
         try:
             database = getDatabase()
-            result = database.execute('''
+            database.execute('''
                 INSERT INTO
                     players
-                    (name)
-                VALUES
-                    (?)
+                (
+                    name
+                )
+                VALUES (
+                    ?
+                )
             ''', (request.form['player_name'],))
             database.commit()
             message = 'The player has been created.'
