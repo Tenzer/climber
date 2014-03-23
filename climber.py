@@ -48,6 +48,23 @@ def formatGame(game):
     return game
 
 
+def prepareResult(result):
+    if int(result['player1_goals']) > int(result['player2_goals']):
+        return {
+            'winner': result['player1'],
+            'loser': result['player2'],
+            'winner_score': result['player1_goals'],
+            'loser_score': result['player2_goals']
+        }
+    else:
+        return {
+            'winner': result['player2'],
+            'loser': result['player1'],
+            'winner_score': result['player2_goals'],
+            'loser_score': result['player1_goals']
+        }
+
+
 @app.route('/')
 def index():
     database = getDatabase()
@@ -121,9 +138,72 @@ def addResult():
 
     database = getDatabase()
     if request.method == 'POST' and request.form:
-        pass
+        try:
+            result = prepareResult(request.form)
+            database.execute('''
+                INSERT INTO
+                    games
+                (
+                    winner,
+                    loser,
+                    winner_score,
+                    loser_score
+                )
+                VALUES (
+                    :winner,
+                    :loser,
+                    :winner_score,
+                    :loser_score
+                )
+            ''', result)
+            database.execute('''
+                UPDATE
+                    players
+                SET
+                    games_won = games_won + 1,
+                    goals_scored = goals_scored + :winner_score,
+                    goals_against = goals_against + :loser_score,
+                    games_streak = CASE
+                        WHEN games_streak < 1 THEN
+                            1
+                        ELSE
+                            games_streak + 1
+                    END
+                WHERE
+                    id = :winner
+            ''', result)
+            database.execute('''
+                UPDATE
+                    players
+                SET
+                    games_lost = games_lost + 1,
+                    goals_scored = goals_scored + :loser_score,
+                    goals_against = goals_against + :winner_score,
+                    games_streak = CASE
+                        WHEN games_streak < 1 THEN
+                            games_streak - 1
+                        ELSE
+                            -1
+                    END
+                WHERE
+                    id = :loser
+            ''', result)
+            database.commit()
+            message = 'The result has been saved.'
+        except sqlite3.IntegrityError:
+            error = 'Something went wrong when saving result, please check your input.'
 
-    players = database.execute('SELECT id, name FROM players WHERE deleted IS NULL').fetchall()
+    players = database.execute('''
+        SELECT
+            id,
+            name
+        FROM
+            players
+        WHERE
+            deleted IS NULL
+        ORDER BY
+            name ASC
+    ''').fetchall()
     return render_template('add-result.html', players=players, message=message, error=error)
 
 

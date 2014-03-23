@@ -35,7 +35,7 @@
             <div class='large-5 large-offset-3 columns'>
                 <label>
                     Player name
-                    <select name='player1_name' class='autocomplete' data-placeholder='Choose a player...'>
+                    <select name='player1' class='autocomplete' data-placeholder='Choose a player...'>
                         <option value=''></option>
                         {% for player in players %}
                         <option value='{{ player.id }}'>{{ player.name }}</option>
@@ -54,7 +54,7 @@
             <div class='large-5 large-offset-3 columns'>
                 <label>
                     Player name
-                    <select name='player2_name' class='autocomplete' data-placeholder='Choose a player...'>
+                    <select name='player2' class='autocomplete' data-placeholder='Choose a player...'>
                         <option value=''></option>
                         {% for player in players %}
                         <option value='{{ player.id }}'>{{ player.name }}</option>
