@@ -40,7 +40,7 @@
             {% elif player.games_streak < 0 %}
                 <td class='text-negative standings-divider'>{{ player.games_streak * -1 }} lost</td>
             {% else %}
-                <td class='standings-divider'>{{ player.games_streak }}</td>
+                <td class='standings-divider'>-</td>
             {% endif %}
 
             <td>{{ player.goals_scored }}</td>
