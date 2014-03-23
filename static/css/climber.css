@@ -25,3 +25,47 @@
 .text-negative {
     color: #f04124;
 }
+
+
+/* Overruling of Chosen styles to match Foundation */
+.chosen-container-single .chosen-default {
+    color: rgba(0, 0, 0, 0.75);
+}
+
+.chosen-container-single .chosen-single {
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
+    font-size: 0.875rem;
+    height: 2.3125rem;
+    padding-top: 5px;
+    transition: box-shadow 0.45s ease 0s, border-color 0.45s ease-in-out 0s;
+}
+
+.chosen-container-active.chosen-with-drop .chosen-single {
+    background: #fafafa;
+    border-color: #999999;
+    box-shadow: 0 0 5px #999999;
+    outline: medium none;
+}
+
+.chosen-container-single .chosen-single div b {
+    background: url('chosen-sprite.png') no-repeat 0px 9px;
+}
+
+.chosen-container-active.chosen-with-drop .chosen-single div b {
+    background-position: -18px 9px;;
+}
+
+.chosen-container-single .chosen-drop {
+    border-radius: 0;
+}
+
+.chosen-container .chosen-results {
+    font-size: 0.875rem;
+}
+
+.chosen-container .chosen-results li.highlighted {
+    background: #008cba;
+}
