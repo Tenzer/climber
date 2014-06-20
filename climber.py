@@ -222,9 +222,9 @@ def addPlayer():
                     name
                 )
                 VALUES (
-                    ?
+                    :player_name
                 )
-            ''', (request.form['player_name'],))
+            ''', request.form)
             database.commit()
             message = 'The player has been created.'
         except sqlite3.IntegrityError:
