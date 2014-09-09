@@ -1,6 +1,7 @@
 from flask import Flask, url_for, render_template, g, jsonify, request, redirect
 import sqlite3
 import arrow
+from trueskill import Rating, rate_1vs1
 from os import path
 import json
 
@@ -48,21 +49,62 @@ def formatGame(game):
     return game
 
 
-def prepareResult(result):
-    if int(result['player1_goals']) > int(result['player2_goals']):
+def findWinner(form):
+    if int(form['player1_goals']) > int(form['player2_goals']):
         return {
-            'winner': result['player1'],
-            'loser': result['player2'],
-            'winner_score': result['player1_goals'],
-            'loser_score': result['player2_goals']
+            'winner': int(form['player1']),
+            'loser': int(form['player2']),
+            'winner_score': int(form['player1_goals']),
+            'loser_score': int(form['player2_goals'])
         }
     else:
         return {
-            'winner': result['player2'],
-            'loser': result['player1'],
-            'winner_score': result['player2_goals'],
-            'loser_score': result['player1_goals']
+            'winner': int(form['player2']),
+            'loser': int(form['player1']),
+            'winner_score': int(form['player2_goals']),
+            'loser_score': int(form['player1_goals'])
         }
+
+
+def getOldRating(result):
+    database = getDatabase()
+    rows = database.execute('''
+        SELECT
+            id,
+            rating,
+            sigma
+        FROM
+            players
+        WHERE
+            id IN (:winner, :loser)
+    ''', result).fetchall()
+
+    for row in rows:
+        if row['id'] == result['winner']:
+            result['winner_oldrating'] = row['rating']
+            result['winner_oldsigma'] = row['sigma']
+        elif row['id'] == result['loser']:
+            result['loser_oldrating'] = row['rating']
+            result['loser_oldsigma'] = row['sigma']
+
+    return result
+
+
+def getNewRating(result):
+    winner = Rating(mu=result['winner_oldrating'], sigma=result['winner_oldsigma'])
+    loser = Rating(mu=result['loser_oldrating'], sigma=result['loser_oldsigma'])
+    winner, loser = rate_1vs1(winner, loser)
+    result['winner_newrating'] = winner.mu
+    result['winner_newsigma'] = winner.sigma
+    result['loser_newrating'] = loser.mu
+    result['loser_newsigma'] = loser.sigma
+    return result
+
+
+def prepareResult(form):
+    result = findWinner(form)
+    result = getOldRating(result)
+    return getNewRating(result)
 
 
 @app.route('/')
@@ -94,16 +136,18 @@ def index():
             games_streak,
             goals_scored,
             goals_against,
-            points
+            rating
         FROM
             players
         WHERE
             deleted IS NULL
         ORDER BY
-            points DESC,
+            rating DESC,
+            games_won / games_lost ASC,
             games_won + games_lost DESC,
             created ASC
     ''').fetchall()
+    print ranking
     return render_template('index.html', recent_games=recent_games, ranking=ranking)
 
 
@@ -138,8 +182,9 @@ def addResult():
 
     database = getDatabase()
     if request.method == 'POST' and request.form:
+        result = prepareResult(request.form)
+
         try:
-            result = prepareResult(request.form)
             database.execute('''
                 INSERT INTO
                     games
