@@ -43,26 +43,42 @@ def formatGame(game):
     if type(game) is sqlite3.Row:
         game = dict(game)
 
-    date = arrow.get(game['played'].replace(' ', 'T'))
-    game['played'] = date.humanize().capitalize()
+    date = arrow.get(game['added'].replace(' ', 'T'))
+    game['added'] = date.humanize().capitalize()
     return game
 
 
 def prepareResult(result):
-    if int(result['player1_goals']) > int(result['player2_goals']):
+    if int(result['team1_goals']) > int(result['team2_goals']):
         return {
-            'winner': result['player1'],
-            'loser': result['player2'],
-            'winner_score': result['player1_goals'],
-            'loser_score': result['player2_goals']
+            'winners': result.getlist('team1'),
+            'winners_string': ','.join(result.getlist('team1')),
+            'losers': result.getlist('team2'),
+            'losers_string': ','.join(result.getlist('team2')),
+            'winners_score': result['team1_goals'],
+            'losers_score': result['team2_goals']
         }
     else:
         return {
-            'winner': result['player2'],
-            'loser': result['player1'],
-            'winner_score': result['player2_goals'],
-            'loser_score': result['player1_goals']
+            'winners': result.getlist('team2'),
+            'winners_string': ','.join(result.getlist('team2')),
+            'losers': result.getlist('team1'),
+            'losers_string': ','.join(result.getlist('team1')),
+            'winners_score': result['team2_goals'],
+            'losers_score': result['team1_goals']
         }
+
+def playerExists(player_id):
+    database = getDatabase()
+    result = database.execute('''
+        SELECT
+            count(id) AS found
+        FROM
+            players
+        WHERE
+            id = ?
+    ''', player_id).fetchone()[0]
+    return result
 
 
 @app.route('/')
@@ -70,18 +86,15 @@ def index():
     database = getDatabase()
     recent_games = database.execute('''
         SELECT
-            games.added AS played,
-            winner.name AS winner_name,
-            loser.name AS loser_name,
-            games.winner_score AS winner_score,
-            games.loser_score AS loser_score
+            added,
+            winners,
+            losers,
+            winners_score,
+            losers_score
         FROM
             games
-        JOIN
-            players AS winner ON games.winner=winner.id,
-            players AS loser ON games.loser=loser.id
         ORDER BY
-            games.added DESC
+            added DESC
         LIMIT
             3
     ''').fetchall()
@@ -112,20 +125,17 @@ def results():
     database = getDatabase()
     results = database.execute('''
         SELECT
-            games.added AS played,
-            winner.name AS winner_name,
-            loser.name AS loser_name,
-            games.winner_score AS winner_score,
-            games.loser_score AS loser_score,
-            games.winner_points AS winner_points,
-            games.loser_points AS loser_points
+            added,
+            winners,
+            losers,
+            winners_score,
+            losers_score,
+            winners_points,
+            losers_points
         FROM
             games
-        JOIN
-            players AS winner ON games.winner=winner.id,
-            players AS loser ON games.loser=loser.id
         ORDER BY
-            games.added DESC
+            added DESC
     ''').fetchall()
     results = map(formatGame, results)
     return render_template('results.html', results=results)
@@ -138,60 +148,78 @@ def addResult():
 
     database = getDatabase()
     if request.method == 'POST' and request.form:
-        try:
+        checked_players = []
+        for player_id in request.form.getlist('team1') + request.form.getlist('team2'):
+            if player_id in checked_players:
+                error = 'A player was specified multiple times, please check your input.'
+                break
+
+            if not playerExists(player_id):
+                error = 'One of the players in the input does not exist in the database.'
+                break
+
+            checked_players.append(player_id)
+
+        if not error:
             result = prepareResult(request.form)
+
             database.execute('''
                 INSERT INTO
                     games
                 (
-                    winner,
-                    loser,
-                    winner_score,
-                    loser_score
+                    winners,
+                    losers,
+                    winners_score,
+                    losers_score
                 )
                 VALUES (
-                    :winner,
-                    :loser,
-                    :winner_score,
-                    :loser_score
+                    :winners_string,
+                    :losers_string,
+                    :winners_score,
+                    :losers_score
                 )
             ''', result)
-            database.execute('''
-                UPDATE
-                    players
-                SET
-                    games_won = games_won + 1,
-                    goals_scored = goals_scored + :winner_score,
-                    goals_against = goals_against + :loser_score,
-                    games_streak = CASE
-                        WHEN games_streak < 1 THEN
-                            1
-                        ELSE
-                            games_streak + 1
-                    END
-                WHERE
-                    id = :winner
-            ''', result)
-            database.execute('''
-                UPDATE
-                    players
-                SET
-                    games_lost = games_lost + 1,
-                    goals_scored = goals_scored + :loser_score,
-                    goals_against = goals_against + :winner_score,
-                    games_streak = CASE
-                        WHEN games_streak < 1 THEN
-                            games_streak - 1
-                        ELSE
-                            -1
-                    END
-                WHERE
-                    id = :loser
-            ''', result)
+
+            for player_id in result['winners']:
+                result['player_id'] = player_id
+                database.execute('''
+                    UPDATE
+                        players
+                    SET
+                        games_won = games_won + 1,
+                        goals_scored = goals_scored + :winners_score,
+                        goals_against = goals_against + :losers_score,
+                        games_streak = CASE
+                            WHEN games_streak < 1 THEN
+                                1
+                            ELSE
+                                games_streak + 1
+                        END
+                    WHERE
+                        id = :player_id
+                ''', result)
+
+            for player_id in result['losers']:
+                result['player_id'] = player_id
+                database.execute('''
+                    UPDATE
+                        players
+                    SET
+                        games_lost = games_lost + 1,
+                        goals_scored = goals_scored + :losers_score,
+                        goals_against = goals_against + :winners_score,
+                        games_streak = CASE
+                            WHEN games_streak < 1 THEN
+                                games_streak - 1
+                            ELSE
+                                -1
+                        END
+                    WHERE
+                        id = :player_id
+                ''', result)
+
             database.commit()
             message = 'The result has been saved.'
-        except sqlite3.IntegrityError:
-            error = 'Something went wrong when saving result, please check your input.'
 
     players = database.execute('''
         SELECT

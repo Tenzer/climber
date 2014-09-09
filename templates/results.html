@@ -9,45 +9,45 @@
                     <thead>
                         <tr>
                             <th width='130'>Submitted</th>
-                            <th width='235'>Winner</th>
+                            <th width='235'>Winners</th>
                             <th width='125' class='text-center'>Points +/-</th>
                             <th width='119' colspan='2' class='text-center'>Result</th>
-                            <th width='235'>Loser</th>
+                            <th width='235'>Losers</th>
                             <th width='125' class='text-center'>Points +/-</th>
                         </tr>
                     </thead>
                     <tbody>
                     {% for game in results %}
                         <tr>
-                            <td>{{ game.played }}</td>
-                            <td>{{ game.winner_name }}</td>
+                            <td>{{ game.added }}</td>
+                            <td>{{ game.winners }}</td>
 
-                            {% if game.winner_points > 0 %}
-                                <td class='text-center text-positive'>+{{ game.winner_points | round(1) }}</td>
-                            {% elif game.winner_points < 0 %}
-                                <td class='text-center text-negative'>{{ game.winner_points | round(1) }}</td>
+                            {% if game.winners_points > 0 %}
+                                <td class='text-center text-positive'>+{{ game.winners_points }}</td>
+                            {% elif game.winners_points < 0 %}
+                                <td class='text-center text-negative'>{{ game.winners_points }}</td>
                             {% else %}
-                                <td class='text-center'>{{ game.winner_points | round (1) }}</td>
+                                <td class='text-center'>{{ game.winners_points }}</td>
                             {% endif %}
 
-                            <td class='score-winner'><strong>{{ game.winner_score }}</strong> -</td>
-                            <td class='score-loser'>{{ game.loser_score }}</td>
+                            <td class='score-winner'><strong>{{ game.winners_score }}</strong> -</td>
+                            <td class='score-loser'>{{ game.losers_score }}</td>
 
-                            <td>{{ game.loser_name }}</td>
+                            <td>{{ game.losers }}</td>
 
-                            {% if game.loser_points > 0 %}
-                                <td class='text-center text-positive'>+{{ game.loser_points | round(1) }}</td>
-                            {% elif game.loser_points < 0 %}
-                                <td class='text-center text-negative'>{{ game.loser_points | round(1) }}</td>
+                            {% if game.losers_points > 0 %}
+                                <td class='text-center text-positive'>+{{ game.losers_points }}</td>
+                            {% elif game.losers_points < 0 %}
+                                <td class='text-center text-negative'>{{ game.losers_points }}</td>
                             {% else %}
-                                <td class='text-center'>{{ game.loser_points | round (1) }}</td>
+                                <td class='text-center'>{{ game.losers_points }}</td>
                             {% endif %}
                         </tr>
                     {% else %}
                         <tr>
                             <td colspan='7' class='text-center'>
                                 No results were found.
-                                Perhaps you want to <a href=''>submit one</a>?
+                                Perhaps you want to <a href='{{ url_for('addResult') }}'>submit one</a>?
                             </td>
                         </tr>
                     {% endfor %}

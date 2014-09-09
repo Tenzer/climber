@@ -2,19 +2,19 @@
     <thead>
         <tr>
             <th width='128'>Submitted</th>
-            <th width='135'>Winner</th>
-            <th width='135'>Loser</th>
+            <th width='135'>Winners</th>
+            <th width='135'>Losers</th>
             <th width='70' colspan='2' class='text-center'>Result</th>
         </tr>
     </thead>
     <tbody>
     {% for game in recent_games %}
         <tr>
-            <td>{{ game.played }}</td>
-            <td>{{ game.winner_name }}</td>
-            <td>{{ game.loser_name }}</td>
-            <td class='score-winner'><strong>{{ game.winner_score }}</strong> -</td>
-            <td class='score-loser'>{{ game.loser_score }}</td>
+            <td>{{ game.added }}</td>
+            <td>{{ game.winners }}</td>
+            <td>{{ game.losers }}</td>
+            <td class='score-winner'><strong>{{ game.winners_score }}</strong> -</td>
+            <td class='score-loser'>{{ game.losers_score }}</td>
         </tr>
     {% else %}
         <tr>
