@@ -1,7 +1,7 @@
 # TODO
 
-- Add server-side input validation for `add-result`
-- Add simple server-side input validation for `add-player`
+- Add server-side input validation of scores and amount of players for `add-result`
+- Remove already picked players from auto-suggestion box on `add-result` page
 - Strip player names before doing anything with them on `add-player`
 - Implement ranking system
 - Add pagination on `results` page (http://flask.pocoo.org/snippets/44/)
